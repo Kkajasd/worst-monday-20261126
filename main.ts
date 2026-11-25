@@ -15,13 +15,18 @@ const ENTRY =
   // ("needs fixing again") is the twist. 135 characters.
   "Monday: the deploy failed, my inbox hit 4,000 unread, and stand-up spent 40 minutes agreeing the bug I fixed Friday needs fixing again.";
 
+// Gate limit for this bounty: entries are 1-140 characters.
+const MAX_CHARS = 140;
 const OUTPUT_DIR = process.env.OUTPUT_DIR ?? "/output";
 
 function main(): void {
   // The gate requires 1-140 characters of UTF-8, not only whitespace.
   const chars = [...ENTRY].length;
-  if (chars < 1 || chars > 140 || ENTRY.trim().length === 0) {
+  if (chars < 1 || chars > MAX_CHARS || ENTRY.trim().length === 0) {
     throw new Error(`entry is ${chars} characters, must be 1-140`);
+  }
+  if (ENTRY !== ENTRY.trim() || ENTRY.includes("  ")) {
+    throw new Error("entry must not have leading/trailing whitespace or double spaces");
   }
   if (ENTRY.includes("\n") || ENTRY.includes("\r")) {
     throw new Error("entry must be a single line");
